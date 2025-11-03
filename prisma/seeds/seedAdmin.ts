@@ -18,7 +18,7 @@ export async function seedAdmin(prisma:PrismaClient){
         })
         
         console.log("Admin seeded")
+    } else {
+        console.log("Admin already seeded")
     }
-
-    console.log("Admin already seeded")
 }
