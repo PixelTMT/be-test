@@ -19,9 +19,65 @@ model User {
   role      Roles    @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  // Relations
+  fileProcessings FileProcessing[]
 }
 
 enum Roles {
   USER
   ADMIN
+}
+
+model FileProcessing {
+  id          Int           @id @default(autoincrement())
+  filename    String
+  originalName String
+  fileSize    Int
+  mimeType    String
+  status      FileStatus    @default(PENDING)
+  fileUrl     String        // URL to the uploaded file
+  errorMessage String?      // Error details if processing failed
+  totalRows   Int?          // Total rows in Excel file
+  processedRows Int?        // Successfully processed rows
+  retryCount  Int           @default(0)
+  jobId       String?       // Bull queue job ID for tracking
+  userId      Int           // Who uploaded the file
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  completedAt DateTime?
+  
+  // Relations
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  data       ProcessedData[]
+  
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([jobId])
+}
+
+model ProcessedData {
+  id               Int      @id @default(autoincrement())
+  fileProcessingId Int      // Reference to FileProcessing
+  rowNumber        Int      // Row number in the Excel file
+  columnName       String   // Column header name
+  value            String   // Cell value (stored as string for flexibility)
+  dataType         String   // Original data type (number, string, date, etc.)
+  createdAt        DateTime @default(now())
+  
+  // Relations
+  fileProcessing FileProcessing @relation(fields: [fileProcessingId], references: [id], onDelete: Cascade)
+  
+  @@index([fileProcessingId])
+  @@index([rowNumber])
+  @@index([columnName])
+}
+
+enum FileStatus {
+  PENDING       // File uploaded, waiting for processing
+  IN_PROGRESS   // Currently being processed
+  COMPLETED     // Successfully processed
+  FAILED        // Processing failed
+  CANCELLED     // Processing cancelled
 }
