@@ -28,7 +28,7 @@ The complete API documentation is available in **`API_DOCUMENTATION.md`**. This 
 
 ### 🧪 Testing with Postman
 
-For easier testing, a [Postman collection](Example_Files/Postman_NodeWave_Backend-Rich_Evan_lee.postman_collection.json) is provided:
+For easier testing, a [Postman collection](Example_Files/Postman_NodeWave_Backend-Rich_Evan_lee.postman_collection.json) is provided.
 
 
 This collection includes pre-configured requests for:
