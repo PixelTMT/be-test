@@ -3,7 +3,7 @@ import "./paths";
 import app from "./app/instance";
 import { displayAsciiArt } from "$utils/ascii_art.utils";
 import { REST_ASCII_ART } from './utils/ascii_art.utils';
-
+import { BullJobQueue } from './services/JobQueue';
 function parseArguments(args: string[]): Record<string, string> {
   const parsedArgs: Record<string, string> = {};
 
@@ -20,6 +20,15 @@ function parseArguments(args: string[]): Record<string, string> {
 const parsedArgs = parseArguments(process.argv);
 
 if (parsedArgs["service"] == "rest") {
-  displayAsciiArt(REST_ASCII_ART)
-  app.restApp()
+  (async () => {
+    try {
+      await BullJobQueue.initialize();
+
+      displayAsciiArt(REST_ASCII_ART);
+      app.restApp();
+    } catch (err) {
+      console.error("Failed to initialize Bull queue:", err);
+      process.exit(1);
+    }
+  })();
 }

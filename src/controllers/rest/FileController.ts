@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import multer from 'multer';
+import multer, { MulterError } from 'multer';
 import path from 'path';
 import { FileProcessingService } from '$services/FileProcessingService';
 import { FileProcessingStatus, FILE_MESSAGES } from '$entities/FileProcessing';
@@ -34,55 +34,63 @@ export async function uploadFile(req: Request, res: Response): Promise<Response>
     if (!req.user) {
       return res.status(401).json({
         success: false,
-        message: 'Authentication required'
+        message: "Authentication required",
       });
     }
 
-    // Handle file upload using multer middleware
-    upload.single('file')(req, res, async (err) => {
-      if (err) {
-        return res.status(400).json({
-          success: false,
-          message: err.message
-        });
-      }
-
-      const file = req.file;
-      if (!file) {
-        return res.status(400).json({
-          success: false,
-          message: 'No file provided'
-        });
-      }
-
-      try {
-        // Upload and queue file for processing
-        const result = await FileProcessingService.uploadAndProcessFile(file, req.user!.id);
-
-        return response_success(res, {
-          jobId: result.jobId,
-          fileProcessingId: result.fileProcessingId,
-          message: FILE_MESSAGES.PROCESSING_STARTED
-        }, FILE_MESSAGES.FILE_UPLOADED);
-      } catch (uploadError) {
-        Logger.error('FileController.uploadFile error:', uploadError);
-        return res.status(500).json({
-          success: false,
-          message: uploadError instanceof Error ? uploadError.message : 'File processing failed'
-        });
-      }
+    // Wrap multer.single in a Promise so we can await it
+    await new Promise<void>((resolve, reject) => {
+      upload.single("file")(req, res, (err: any) => {
+        if (err) {
+          // Multer error or other error
+          return reject(err);
+        }
+        return resolve();
+      });
     });
 
-    // Return a pending response since the actual response will be handled by multer
-    return res.status(202).json({
-      success: true,
-      message: 'File upload in progress'
-    });
-  } catch (error) {
-    Logger.error('FileController.uploadFile error:', error);
+    // Now multer has populated req.file
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({
+        success: false,
+        message: "No file provided",
+      });
+    }
+
+    // Upload and queue file for processing
+    const result = await FileProcessingService.uploadAndProcessFile(file, req.user.id);
+
+    return response_success(
+      res,
+      {
+        jobId: result.jobId,
+        fileProcessingId: result.fileProcessingId,
+        message: FILE_MESSAGES.PROCESSING_STARTED,
+      },
+      FILE_MESSAGES.FILE_UPLOADED
+    );
+  } catch (err: any) {
+    // If headers already sent, just log and return (prevents crash)
+    Logger.error("FileController.uploadFile error:", err);
+
+    if (res.headersSent) {
+      // Response already sent by something else — don't attempt to send again.
+      return res; // nothing more to do
+    }
+
+    // Handle Multer-specific errors gracefully
+    if (err instanceof MulterError) {
+      return res.status(400).json({
+        success: false,
+        message: err.message,
+      });
+    }
+
+    const msg = err instanceof Error ? err.message : "File processing failed";
     return res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: msg,
     });
   }
 }

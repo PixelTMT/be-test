@@ -1,0 +1,451 @@
+{
+	"info": {
+		"_postman_id": "fcb4b13c-ad2f-4dfc-ad11-567571f7712f",
+		"name": "NodeWave Backend - Rich Evan lee",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34344684"
+	},
+	"item": [
+		{
+			"name": "Register User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const responseData = pm.response.json();\r",
+							"if(responseData[\"content\"][\"token\"] !== null){\r",
+							"    pm.environment.set('authToken', responseData[\"content\"][\"token\"]);\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"user@example.com\",\r\n  \"password\": \"password123\",\r\n  \"fullName\": \"John Doe\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseURL}}/auth/register",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const responseData = pm.response.json();\r",
+							"if(responseData[\"content\"][\"token\"] !== null){\r",
+							"    pm.environment.set('authToken', responseData[\"content\"][\"token\"]);\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"user@example.com\",\r\n  \"password\": \"password123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseURL}}/auth/login",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User Profile",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseURL}}/auth/me",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"auth",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify Token",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseURL}}/auth/verify",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"auth",
+						"verify"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload Excel File",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const responseData = pm.response.json();\r",
+							"if(responseData[\"content\"][\"fileProcessingId\"] !== null){\r",
+							"    pm.environment.set('lastFileId', responseData[\"content\"][\"fileProcessingId\"]);\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "multipart/form-data",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "postman-cloud:///1f0b95c4-2c71-4b00-aeb0-cb39d8fc6ee7"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{BaseURL}}/files/upload",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"files",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get File Processing Status",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseURL}}/files/:id/status",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"files",
+						":id",
+						"status"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{lastFileId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get File List (with Filtering & Pagination)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseURL}}/files?page=1&rows=20&status=COMPLETED&search=sales&startDate=2025-11-01&endDate=2025-11-30",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"files"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "rows",
+							"value": "20"
+						},
+						{
+							"key": "status",
+							"value": "COMPLETED"
+						},
+						{
+							"key": "search",
+							"value": "sales"
+						},
+						{
+							"key": "startDate",
+							"value": "2025-11-01"
+						},
+						{
+							"key": "endDate",
+							"value": "2025-11-30"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Processed Data",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseURL}}/files/:id/data",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"files",
+						":id",
+						"data"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{lastFileId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retry Failed File Processing",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{BaseURL}}/files/:id/retry",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"files",
+						":id",
+						"retry"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{lastFileId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete File",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{BaseURL}}/files/:id",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"files",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{lastFileId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
