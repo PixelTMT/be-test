@@ -18,7 +18,7 @@ This project is for **NodeWave Back End Candidate Assessment** with JWT authenti
 
 ### 📚 API Documentation
 
-The complete API documentation is available in **`API_DOCUMENTATION.md`**. This file contains:
+The complete API documentation is available in **`[API_DOCUMENTATION.md](API_DOCUMENTATION.md)`**. This file contains:
 
 - **Authentication Endpoints** - User registration, login, profile management
 - **File Processing Endpoints** - Upload, status checking, data retrieval, retry/delete functionality
