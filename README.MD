@@ -14,14 +14,44 @@
 
 ## How to use
 
-Clone this repository, and set up various things like :
+This project is for **NodeWave Back End Candidate Assessment** with JWT authentication, background job processing, and comprehensive API endpoints.
 
-- change package.json structure
-- change auth mechanism to match project
-- update readme (delete this how to use part and change the title!)
+### 📚 API Documentation
 
-> [!IMPORTANT]  
->  Steps below are steps to run on project, this repo is only a base, not a fully runnable project, this repo only serve as a template! If you wish to try this repo and add more functionality, please create your own branch locally :)
+The complete API documentation is available in **`API_DOCUMENTATION.md`**. This file contains:
+
+- **Authentication Endpoints** - User registration, login, profile management
+- **File Processing Endpoints** - Upload, status checking, data retrieval, retry/delete functionality
+- **Request/Response Examples** - Complete JSON examples for all endpoints
+- **Error Handling** - Standardized error response formats
+- **Security Features** - JWT authentication, file validation, user isolation
+
+### 🧪 Testing with Postman
+
+For easier testing, a [Postman collection](Example_Files/Postman_NodeWave_Backend-Rich_Evan_lee.postman_collection.json) is provided:
+
+
+This collection includes pre-configured requests for:
+- User authentication (register, login, profile)
+- File upload and processing
+- Status checking and data retrieval
+- File retry and delete operations
+
+**To use the Postman collection:**
+1. Import the JSON file into Postman
+2. Set up environment variables:
+   - `baseUrl`: `http://localhost:3150`
+   - `authToken`: (will be set automatically after login)
+3. Start with the login request to get your authentication token
+4. Use the authenticated requests for file operations
+
+### 📋 Quick Start Workflow
+
+1. **Register/Login** - Create account or login to get JWT token
+2. **Upload Excel File** - Upload .xlsx or .xls files (max 10MB)
+3. **Check Status** - Monitor processing progress
+4. **Retrieve Data** - View extracted cell data with pagination
+5. **Retry/Delete** - Handle failed files or remove processed files
 
 ## Steps To Run Project Locally
 
